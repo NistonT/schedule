@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { InputForm } from "./components/inputForm";
+import { InputForm } from "./components/InputForm";
 import { useAuthorization } from "./hook/useAuthorization.hook";
 
 export const Authorization = () => {
