@@ -3,20 +3,16 @@ import { useAtomValue } from "jotai";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const Authorization = () => {
+export const Profile = () => {
 	const navigate = useNavigate();
+
 	const isAuth = useAtomValue(isAuthAtom);
 
 	useEffect(() => {
-		if (isAuth) {
-			navigate("/");
+		if (!isAuth) {
+			navigate("/authorization");
 		}
 	}, []);
-	useEffect(() => {
-		if (isAuth) {
-			navigate("/");
-		}
-	}, [isAuth]);
 
-	return <>Authorization</>;
+	return <>Profile</>;
 };
