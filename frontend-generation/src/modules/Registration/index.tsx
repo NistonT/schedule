@@ -3,7 +3,7 @@ import { useAtomValue } from "jotai";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const Authorization = () => {
+export const Registration = () => {
 	const navigate = useNavigate();
 	const isAuth = useAtomValue(isAuthAtom);
 
@@ -18,5 +18,5 @@ export const Authorization = () => {
 		}
 	}, [isAuth]);
 
-	return <>Authorization</>;
+	return <>Registration</>;
 };

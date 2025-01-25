@@ -1,33 +1,29 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.utils import timezone
 import uuid
+from django.utils import timezone
+from django.contrib.auth.hashers import make_password
 
-
-class User(AbstractUser):
+class User(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    api_key = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128)
+    email = models.EmailField(unique=True)
+    api_key = models.CharField(max_length=40, unique=True, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
-    groups = models.ManyToManyField(
-        'auth.Group',
-        verbose_name=('groups'),
-        blank=True,
-        help_text=(
-            'The groups this user belongs to. A user will get all permissions '
-            'granted to each of their groups.'
-        ),
-        related_name="custom_user_set",  # Добавили related_name
-        related_query_name="user",
-    )
-    user_permissions = models.ManyToManyField(
-        'auth.Permission',
-        verbose_name=('user permissions'),
-        blank=True,
-        help_text=('Specific permissions for this user.'),
-        related_name="custom_user_perm_set",  # Добавили related_name
-        related_query_name="user",
-    )
+    def save(self, *args, **kwargs):
+        if not self.api_key:
+            self.api_key = uuid.uuid4().hex
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.username
+
+    @classmethod
+    def create_user(cls, username, email, password):
+        # Хешируем пароль
+        hashed_password = make_password(password)
+        # Создаём пользователя
+        user = cls(username=username, email=email, password=hashed_password)
+        user.save()
+        return user
