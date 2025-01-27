@@ -13,6 +13,11 @@ export const Profile = () => {
 			navigate("/authorization");
 		}
 	}, []);
+	useEffect(() => {
+		if (!isAuth) {
+			navigate("/authorization");
+		}
+	}, [isAuth]);
 
 	return <>Profile</>;
 };
