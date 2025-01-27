@@ -1,4 +1,5 @@
-import { Login } from "./components/Login";
+import { NavLink } from "react-router-dom";
+import { Logout } from "./components/Logout";
 import { Navigation } from "./components/Navigation";
 import { ProfileModal } from "./components/ProfileModal";
 
@@ -6,24 +7,35 @@ export const Header = () => {
 	return (
 		<header className='text-gray-600 body-font'>
 			<div className='container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center'>
-				<a className='flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0'>
-					<svg
-						xmlns='http://www.w3.org/2000/svg'
-						fill='none'
-						stroke='currentColor'
-						stroke-linecap='round'
-						stroke-linejoin='round'
-						stroke-width='2'
-						className='w-10 h-10 text-white p-2 bg-purple-500 rounded-full'
-						viewBox='0 0 24 24'
-					>
-						<path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'></path>
+				<NavLink
+					to={"/"}
+					className='flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0'
+				>
+					<svg width='40' height='40' xmlns='http://www.w3.org/2000/svg'>
+						<rect
+							width='100%'
+							height='100%'
+							rx='10.0'
+							ry='10.0'
+							fill='#0074D9'
+						/>
+						<text
+							x='50%'
+							y='52%'
+							fontSize='16'
+							fill='#ffffff'
+							textAnchor='middle'
+							alignmentBaseline='middle'
+						>
+							AI
+						</text>
 					</svg>
-					<span className='ml-3 text-xl'>Tailblocks</span>
-				</a>
+					<span className='ml-3 text-xl'>ГЕНЕРАТОР API</span>
+				</NavLink>
 				<Navigation />
-				<Login />
+				{/* <Login /> */}
 				<ProfileModal />
+				<Logout />
 			</div>
 		</header>
 	);

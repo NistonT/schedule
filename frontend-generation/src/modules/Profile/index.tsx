@@ -19,5 +19,11 @@ export const Profile = () => {
 		}
 	}, [isAuth]);
 
-	return <>Profile</>;
+	return (
+		<>
+			<div>
+				<span>Профиль</span>
+			</div>
+		</>
+	);
 };

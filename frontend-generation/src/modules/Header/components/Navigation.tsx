@@ -1,10 +1,13 @@
 import { isAuthAtom } from "@/jotai/authentication";
 import { useAtomValue } from "jotai";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { EStatus, navLinks } from "../constants";
 
 export const Navigation = () => {
 	const isAuth = useAtomValue(isAuthAtom);
+	const location = useLocation();
+
+	const isActive = location.pathname;
 
 	return (
 		<nav className='md:ml-auto flex flex-wrap items-center text-base justify-center'>
@@ -17,10 +20,13 @@ export const Navigation = () => {
 					return (
 						<NavLink
 							to={nav.path}
-							className='mr-5 hover:text-gray-900'
+							className={`relative mr-5 text-gray-700 hover:text-gray-900 group ${
+								isActive === nav.path ? "text-gray-900" : ""
+							}`}
 							key={nav.path}
 						>
 							{nav.name}
+							<div className='absolute left-0 bottom-0 h-0.5 bg-black w-0 group-hover:w-full transition-all duration-300 ease-in-out' />
 						</NavLink>
 					);
 				}
