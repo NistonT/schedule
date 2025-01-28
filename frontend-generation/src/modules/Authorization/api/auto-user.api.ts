@@ -30,7 +30,13 @@ export const AutoUserApi = async (
 		});
 		return response;
 	} catch (error) {
-		console.log(error);
+		if (axios.isAxiosError(error)) {
+			console.error(`Axios error: ${error.message}`);
+			console.error(`Status code: ${error.response?.status}`);
+			console.error(`Response data: ${JSON.stringify(error.response?.data)}`);
+		} else {
+			console.error(`Unexpected error: ${error}`);
+		}
 		return null;
 	}
 };
