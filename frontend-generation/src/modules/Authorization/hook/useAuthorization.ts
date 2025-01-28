@@ -24,7 +24,7 @@ export const useAuthorization = () => {
 		onSuccess: response => {
 			if (response === null) {
 				console.log("Ошибка авторизации");
-				setMessageError("Ошибка авторизации");
+				setMessageError("Пользователь не найден");
 				setIsError(true);
 				return;
 			}
