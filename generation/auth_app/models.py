@@ -17,7 +17,7 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
         )
 
-        user.set_password(password)  # Хешируем пароль
+        user.set_password(password)
         user.api_key = secrets.token_urlsafe(32)
         user.save(using=self._db)
         return user
