@@ -18,7 +18,7 @@ export const AutoUserApi = async (
 		);
 		Cookies.set("token", response.data.access, {
 			path: "/",
-			expires: 1,
+			expires: 7,
 			sameSite: "strict",
 			secure: process.env.NODE_ENV === "production",
 		});

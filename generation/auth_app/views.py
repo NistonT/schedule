@@ -5,8 +5,43 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer
 from .models import User
+import secrets
+
+class UpdateApiKeyView(APIView):
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        if not user_id:
+            return Response({'error': 'user_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        new_api_key = secrets.token_urlsafe(32)  # Генерируем новый API ключ
+        user.api_key = new_api_key
+        user.save()
+
+        return Response({
+            'new_api_key': new_api_key
+        }, status=status.HTTP_200_OK)
+
+class UserProfileView(APIView):
+    # Убираем проверку аутентификации
+
+    def get(self, request):
+        # Если нужно вернуть данные конкретного пользователя, например по id
+        user_id = request.query_params.get('user_id')  # Или как-то иначе определите, чьи данные нужны
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class RegisterView(APIView):
     def post(self, request):

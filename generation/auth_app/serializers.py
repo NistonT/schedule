@@ -13,6 +13,18 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+        fields = ['id', 'username', 'email', 'api_key', 'created_at', 'schedule']
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = ['id', 'schedule_data', 'created_at']
+
+class UserSerializer(serializers.ModelSerializer):
+    schedule = ScheduleSerializer(read_only=True)
+
+    class Meta:
+        model = User
         fields = ['id', 'username', 'email', 'password', 'api_key', 'created_at', 'schedule']
         extra_kwargs = {'password': {'write_only': True}}
 
