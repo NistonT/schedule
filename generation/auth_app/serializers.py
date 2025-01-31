@@ -1,7 +1,17 @@
 # auth_app/serializers.py
-
+from django.contrib.auth.hashers import check_password
 from rest_framework import serializers
 from .models import User, Schedule
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate(self, data):
+        user = self.context['user']
+        if not check_password(data['old_password'], user.password):
+            raise serializers.ValidationError({"old_password": "Old password is not correct"})
+        return data
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
