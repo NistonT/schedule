@@ -1,3 +1,4 @@
+import { MessageError } from "@/components/ui/message/MessageError";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { updatedUserApi } from "../../api/updatedUser.api";
@@ -8,10 +9,25 @@ type Props = {
 	name: string;
 	label: string;
 	user_id: number;
+	minLengthValue: number;
+	maxLengthValue: number;
+	patternValue: RegExp;
+	patternMessage: string;
 };
 
-export const InputUpdate = ({ name, label, user_id, type }: Props) => {
+export const InputUpdate = ({
+	name,
+	label,
+	user_id,
+	type,
+	minLengthValue = 1,
+	maxLengthValue = 255,
+	patternValue = /^.*$/,
+	patternMessage = "",
+}: Props) => {
 	const [isReadOnly, setIsReadOnly] = useState<boolean>(false);
+	const [sendMessage, setSendMessage] = useState<string>("");
+	const [isSendMessage, setIsSendMessage] = useState<boolean>(false);
 
 	const [nameValue, setNameValue] = useState<string>(name);
 
@@ -19,6 +35,28 @@ export const InputUpdate = ({ name, label, user_id, type }: Props) => {
 		const transformedData: Record<string, string> = {
 			[type]: nameValue,
 		};
+
+		if (nameValue.length < minLengthValue) {
+			setSendMessage(
+				`Значение должно быть не менее ${minLengthValue} символов.`
+			);
+			setIsSendMessage(true);
+			return;
+		}
+
+		if (nameValue.length > maxLengthValue) {
+			setSendMessage(
+				`Значение должно быть не более ${maxLengthValue} символов.`
+			);
+			setIsSendMessage(true);
+			return;
+		}
+
+		if (!patternValue.test(nameValue)) {
+			setSendMessage(patternMessage);
+			setIsSendMessage(true);
+			return;
+		}
 
 		mutate(transformedData);
 	};
@@ -55,12 +93,17 @@ export const InputUpdate = ({ name, label, user_id, type }: Props) => {
 					value={nameValue}
 					onChange={event => setNameValue(event.target.value)}
 					readOnly={!isReadOnly}
+					minLength={minLengthValue}
+					maxLength={maxLengthValue}
+					pattern={patternValue.source}
+					title={patternMessage}
 				/>
 				<div className='flex gap-4'>
+					{isSendMessage && <MessageError message={sendMessage} />}
 					{isReadOnly && (
 						<button
 							onClick={handlerSaveButton}
-							className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600focus:outline-none focus:ring-2 focus:ring-opacity-75 focus:ring-blue-400`}
+							className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-opacity-75 focus:ring-blue-400`}
 						>
 							Сохранить
 						</button>
