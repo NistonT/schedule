@@ -37,7 +37,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     api_key = models.CharField(max_length=256, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    schedule = models.ForeignKey('Schedule', on_delete=models.SET_NULL, null=True, blank=True)
+    schedule = models.ForeignKey('Schedule', on_delete=models.SET_NULL, null=True, blank=True, related_name='user_schedule')
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -61,8 +61,6 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 class Schedule(models.Model):
-    schedule_data = models.JSONField()
+    user = models.ForeignKey('User', on_delete=models.SET_NULL, null=True, blank=True, related_name='schedules')
+    schedule = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return json.dumps(self.schedule_data)
