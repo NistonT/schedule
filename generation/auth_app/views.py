@@ -11,7 +11,55 @@ from .serializers import UserUpdateSerializer, ChangePasswordSerializer
 from django.contrib.auth.hashers import make_password, check_password
 from .models import User
 import secrets
+import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Schedule, User
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
 
+class GenerateTimetableView(APIView):
+    def post(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Получаем входные данные из запроса
+        input_data = request.data
+
+        # Проверяем, что все необходимые поля присутствуют
+        required_fields = ['t_cabinets', 't_groups', 't_subjects', 't_subjects_hours', 't_teachers', 't_teachers_link']
+        if not all(field in input_data for field in required_fields):
+            return Response({'error': 'Missing required fields in input data'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Преобразуем входные данные в строку JSON
+        input_json = json.dumps(input_data)
+
+        # Загрузка модели и токенизатора
+        model_name = "path/to/llama3.1"  # Укажите путь к вашей модели LLaMA 3.1
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name)
+
+        # Генерация расписания через модель
+        inputs = tokenizer(input_json, return_tensors="pt")
+        outputs = model.generate(inputs["input_ids"], max_length=1024, num_return_sequences=1)
+        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+        # Парсим сгенерированный текст в JSON
+        try:
+            timetable = json.loads(generated_text)
+        except json.JSONDecodeError:
+            return Response({'error': 'Failed to decode generated timetable'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Сохраняем результат в базу данных
+        schedule_entry = Schedule.objects.create(
+            user=user,
+            schedule=timetable
+        )
+
+        return Response(timetable, status=status.HTTP_200_OK)
 
 class ChangePasswordView(APIView):
     def post(self, request, user_id):
